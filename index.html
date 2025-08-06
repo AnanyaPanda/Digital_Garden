@@ -1190,83 +1190,29 @@
             
             if (!isRunning) {
                 try {
-                    updateLakeStatus("Requesting camera permission...");
+                    updateLakeStatus("Starting your reflection...");
                     
-                    // Check if getUserMedia is supported
-                    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                        throw new Error('Camera API not supported in this browser');
-                    }
-
-                    // First get permission using standard web API
-                    let testStream;
-                    try {
-                        testStream = await navigator.mediaDevices.getUserMedia({ 
-                            video: { 
-                                width: { ideal: 640 },
-                                height: { ideal: 480 }
-                            },
-                            audio: false 
-                        });
-                        
-                        console.log('Camera permission granted, stream obtained:', testStream);
-                        
-                        // Stop the test stream
-                        testStream.getTracks().forEach(track => track.stop());
-                        
-                    } catch (permissionError) {
-                        console.error('Permission error:', permissionError);
-                        
-                        if (permissionError.name === 'NotAllowedError') {
-                            updateLakeStatus("Camera permission denied. Please allow camera access and try again.");
-                        } else if (permissionError.name === 'NotFoundError') {
-                            updateLakeStatus("No camera found. Please connect a camera and try again.");
-                        } else if (permissionError.name === 'NotReadableError') {
-                            updateLakeStatus("Camera is busy. Please close other applications using the camera.");
-                        } else {
-                            updateLakeStatus(`Camera error: ${permissionError.message}`);
-                        }
-                        return;
-                    }
+                    let stream = await navigator.mediaDevices.getUserMedia({ 
+                        video: { width: 640, height: 480 },
+                        audio: false 
+                    });
                     
-                    updateLakeStatus("Permission granted! Starting lake reflection...");
+                    stream.getTracks().forEach(track => track.stop());
                     
-                    // Now create p5.js capture
-                    capture = createCapture(VIDEO, (stream) => {
-                        console.log('p5.js capture created successfully');
+                    capture = createCapture(VIDEO, () => {
                         isRunning = true;
                         button.textContent = '⏸️ Stop Lake';
                         button.classList.add('active');
-                        updateLakeStatus("Your reflection lake is active! Click stones or drop pebbles to create ripples.");
+                        updateLakeStatus("Your reflection is active. Click the water or drop pebbles to create ripples.");
                     });
                     
                     capture.size(640, 480);
                     capture.hide();
                     
-                    // Fallback timeout
-                    setTimeout(() => {
-                        if (!isRunning && capture) {
-                            console.log('Checking capture status...');
-                            console.log('Capture width:', capture.width, 'height:', capture.height);
-                            
-                            if (capture.width > 0 && capture.height > 0) {
-                                console.log('Capture seems to be working, activating lake');
-                                isRunning = true;
-                                button.textContent = '⏸️ Stop Lake';
-                                button.classList.add('active');
-                                updateLakeStatus("Lake reflection active! Try clicking the garden stones!");
-                            } else {
-                                console.log('Capture failed to initialize properly');
-                                updateLakeStatus("Camera initialization failed. Please refresh and try again.");
-                            }
-                        }
-                    }, 3000);
-                    
                 } catch (error) {
-                    console.error('Lake setup error:', error);
-                    updateLakeStatus(`Setup error: ${error.message}. Please refresh and try again.`);
+                    updateLakeStatus("Camera access needed. Please allow camera permissions.");
                 }
             } else {
-                // Stop the lake
                 if (capture) {
                     capture.remove();
                     capture = null;
