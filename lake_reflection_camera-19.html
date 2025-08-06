@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Garden - Reflection Lake</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .digital-garden {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .garden-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .garden-title {
+            font-size: 3em;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .garden-subtitle {
+            font-size: 1.3em;
+            color: #7f8c8d;
+            font-style: italic;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .garden-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+            margin-bottom: 50px;
+        }
+
+        .garden-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .garden-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-title {
+            font-size: 1.8em;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-content {
+            color: #555;
+            line-height: 1.7;
+            font-size: 1.1em;
+        }
+
+        /* Lake specific styles */
+        .lake-container {
+            grid-column: span 2;
+            background: linear-gradient(135deg, rgba(139, 69, 19, 0.1) 0%, rgba(160, 82, 45, 0.15) 50%, rgba(34, 139, 34, 0.1) 100%);
+            position: relative;
+            overflow: visible;
+            padding: 60px 30px 30px 30px;
+        }
+
+        .zen-garden {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(139, 69, 19, 0.3) 0%, transparent 25%),
+                radial-gradient(circle at 80% 20%, rgba(34, 139, 34, 0.2) 0%, transparent 30%),
+                linear-gradient(135deg, #f4f1de 0%, #e9dcc9 50%, #f4f1de 100%);
+            border-radius: 30px;
+            box-shadow: 
+                inset 0 0 50px rgba(139, 69, 19, 0.1),
+                0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .lake-canvas-wrapper {
+            position: relative;
+            width: 600px;
+            height: 400px;
+            margin: 20px auto;
+            border-radius: 50%;
+            overflow: hidden;
+            box-shadow: 
+                inset 0 0 50px rgba(0, 0, 0, 0.3),
+                0 10px 30px rgba(0, 0, 0, 0.2);
+            background: radial-gradient(ellipse at center, #3498db 0%, #2980b9 100%);
+            z-index: 10;
+        }
+
+        .lake-canvas-wrapper::before {
+            content: '';
+            position: absolute;
+            top: -15px;
+            left: -15px;
+            right: -15px;
+            bottom: -15px;
+            background: 
+                radial-gradient(ellipse at center, 
+                    #8b4513 0%, 
+                    #a0522d 20%, 
+                    #daa520 40%, 
+                    #228b22 60%, 
+                    #8b4513 100%);
+            border-radius: 50%;
+            z-index: -1;
+        }
+
+        .garden-stone {
+            position: absolute;
+            border-radius: 40% 60% 50% 30% / 30% 40% 60% 50%;
+            box-shadow: 
+                inset -3px -3px 10px rgba(0, 0, 0, 0.3),
+                inset 3px 3px 10px rgba(255, 255, 255, 0.2),
+                0 4px 8px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 5;
+        }
+
+        .garden-stone::before {
+            content: '';
+            position: absolute;
+            top: 20%;
+            left: 25%;
+            width: 35%;
+            height: 30%;
+            background: radial-gradient(ellipse at 40% 30%, rgba(255, 255, 255, 0.4) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .garden-stone:hover {
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 
+                inset -3px -3px 10px rgba(0, 0, 0, 0.4),
+                inset 3px 3px 10px rgba(255, 255, 255, 0.3),
+                0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .stone-tiny {
+            width: 20px;
+            height: 15px;
+            background: 
+                radial-gradient(ellipse at 30% 25%, #d3d3d3 0%, #a9a9a9 40%, #808080 100%);
+        }
+
+        .stone-small {
+            width: 35px;
+            height: 25px;
+            background: 
+                radial-gradient(ellipse at 25% 30%, #deb887 0%, #d2691e 30%, #a0522d 70%, #8b4513 100%);
+        }
+
+        .stone-medium {
+            width: 50px;
+            height: 40px;
+            background: 
+                radial-gradient(ellipse at 20% 20%, #f5deb3 0%, #daa520 25%, #b8860b 50%, #8b7355 100%);
+        }
+
+        .stone-large {
+            width: 70px;
+            height: 55px;
+            background: 
+                radial-gradient(ellipse at 30% 25%, #f4a460 0%, #cd853f 30%, #a0522d 60%, #654321 100%);
+        }
+
+        .stone-boulder {
+            width: 90px;
+            height: 70px;
+            background: 
+                radial-gradient(ellipse at 25% 20%, #d2b48c 0%, #bc9a6a 20%, #8b7d6b 50%, #696969 80%, #2f4f4f 100%);
+        }
+
+        .vegetation {
+            position: absolute;
+            z-index: 3;
+        }
+
+        .grass-patch {
+            width: 40px;
+            height: 30px;
+            background: 
+                radial-gradient(ellipse at center, rgba(34, 139, 34, 0.8) 0%, rgba(0, 100, 0, 0.6) 50%, transparent 100%);
+            border-radius: 50%;
+            filter: blur(1px);
+        }
+
+        .moss-patch {
+            width: 25px;
+            height: 20px;
+            background: 
+                radial-gradient(ellipse at center, rgba(107, 142, 35, 0.7) 0%, rgba(85, 107, 47, 0.5) 70%, transparent 100%);
+            border-radius: 50%;
+            filter: blur(0.5px);
+        }
+
+        .fern {
+            width: 30px;
+            height: 35px;
+            background: 
+                linear-gradient(45deg, transparent 30%, rgba(34, 139, 34, 0.6) 35%, rgba(34, 139, 34, 0.8) 40%, transparent 45%),
+                linear-gradient(-45deg, transparent 30%, rgba(0, 128, 0, 0.5) 35%, rgba(0, 128, 0, 0.7) 40%, transparent 45%),
+                linear-gradient(0deg, rgba(34, 139, 34, 0.3) 0%, transparent 60%);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+        }
+
+        .small-plant {
+            width: 15px;
+            height: 20px;
+            background: 
+                linear-gradient(0deg, rgba(34, 139, 34, 0.8) 0%, rgba(50, 205, 50, 0.6) 50%, transparent 100%);
+            border-radius: 50% 50% 50% 50% / 80% 80% 20% 20%;
+        }
+
+        .reed {
+            width: 8px;
+            height: 45px;
+            background: 
+                linear-gradient(0deg, rgba(107, 142, 35, 0.9) 0%, rgba(154, 205, 50, 0.7) 30%, rgba(173, 255, 47, 0.5) 70%, transparent 100%);
+            border-radius: 50%;
+            transform-origin: bottom center;
+            animation: gentleSway 4s ease-in-out infinite;
+        }
+
+        @keyframes gentleSway {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(2deg); }
+            75% { transform: rotate(-2deg); }
+        }
+
+        .zen-rake-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                repeating-linear-gradient(
+                    45deg,
+                    transparent 0px,
+                    rgba(139, 69, 19, 0.1) 1px,
+                    rgba(139, 69, 19, 0.1) 2px,
+                    transparent 3px,
+                    transparent 15px
+                ),
+                repeating-linear-gradient(
+                    -45deg,
+                    transparent 0px,
+                    rgba(160, 82, 45, 0.05) 1px,
+                    rgba(160, 82, 45, 0.05) 2px,
+                    transparent 3px,
+                    transparent 20px
+                );
+            border-radius: 30px;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .lake-canvas-wrapper::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(ellipse at 30% 20%, rgba(255, 255, 255, 0.3) 0%, transparent 50%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .lake-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .lake-btn {
+            background: rgba(52, 152, 219, 0.2);
+            border: 2px solid rgba(52, 152, 219, 0.5);
+            color: #2c3e50;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .lake-btn:hover {
+            background: rgba(52, 152, 219, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .lake-btn.active {
+            background: rgba(46, 204, 113, 0.3);
+            border-color: rgba(46, 204, 113, 0.6);
+        }
+
+        .lake-status {
+            text-align: center;
+            color: #2c3e50;
+            font-style: italic;
+            margin-top: 15px;
+        }
+
+        .pebble-area {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .pebble {
+            width: 50px;
+            height: 40px;
+            border-radius: 60% 40% 40% 60% / 70% 70% 30% 30%;
+            cursor: grab;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: bold;
+            font-size: 10px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+            position: relative;
+            box-shadow: 
+                inset -3px -3px 8px rgba(0, 0, 0, 0.4),
+                inset 3px 3px 8px rgba(255, 255, 255, 0.3),
+                0 4px 8px rgba(0, 0, 0, 0.3);
+            transform-style: preserve-3d;
+        }
+
+        .pebble::before {
+            content: '';
+            position: absolute;
+            top: 15%;
+            left: 20%;
+            width: 30%;
+            height: 25%;
+            background: radial-gradient(ellipse at 30% 30%, rgba(255, 255, 255, 0.6) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .pebble::after {
+            content: '';
+            position: absolute;
+            bottom: 10%;
+            right: 15%;
+            width: 15%;
+            height: 15%;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 50%;
+            filter: blur(1px);
+            pointer-events: none;
+        }
+
+        .pebble:hover { 
+            transform: scale(1.15) rotateX(10deg) rotateY(-5deg); 
+            box-shadow: 
+                inset -3px -3px 8px rgba(0, 0, 0, 0.5),
+                inset 3px 3px 8px rgba(255, 255, 255, 0.4),
+                0 8px 16px rgba(0, 0, 0, 0.4);
+            filter: brightness(1.1);
+        }
+
+        .pebble:active { 
+            cursor: grabbing; 
+            transform: scale(0.95) rotateX(-5deg); 
+            box-shadow: 
+                inset -2px -2px 6px rgba(0, 0, 0, 0.3),
+                inset 2px 2px 6px rgba(255, 255, 255, 0.2),
+                0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: all 0.1s ease;
+        }
+
+        .pebble.small { 
+            background: 
+                radial-gradient(ellipse at 30% 20%, #b19cd9 0%, #8e44ad 30%, #6a2c91 100%),
+                linear-gradient(45deg, rgba(255,255,255,0.1) 0%, transparent 50%);
+            width: 45px;
+            height: 35px;
+        }
+
+        .pebble.medium { 
+            background: 
+                radial-gradient(ellipse at 25% 25%, #7fb3d3 0%, #3498db 25%, #2980b9 70%, #1f4e79 100%),
+                linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+            width: 55px;
+            height: 45px;
+        }
+
+        .pebble.large { 
+            background: 
+                radial-gradient(ellipse at 20% 30%, #f7ca88 0%, #f39c12 20%, #e67e22 60%, #d35400 100%),
+                linear-gradient(225deg, rgba(255,255,255,0.2) 0%, transparent 50%);
+            width: 60px;
+            height: 50px;
+        }
+
+        .pebble.throwing {
+            animation: pebbleThrow 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        @keyframes pebbleThrow {
+            0% {
+                transform: scale(1) rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+                opacity: 1;
+            }
+            20% {
+                transform: scale(1.2) rotateX(180deg) rotateY(90deg) rotateZ(45deg) translateY(-30px);
+            }
+            50% {
+                transform: scale(0.8) rotateX(360deg) rotateY(180deg) rotateZ(180deg) translateY(-10px);
+                opacity: 0.8;
+            }
+            80% {
+                transform: scale(0.6) rotateX(540deg) rotateY(270deg) rotateZ(270deg) translateY(10px);
+                opacity: 0.4;
+            }
+            100% {
+                transform: scale(0.2) rotateX(720deg) rotateY(360deg) rotateZ(360deg) translateY(0px);
+                opacity: 0;
+            }
+        }
+
+        .pebble-ripple-effect {
+            position: absolute;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            pointer-events: none;
+            animation: rippleEffect 2s ease-out forwards;
+        }
+
+        @keyframes rippleEffect {
+            0% {
+                width: 20px;
+                height: 20px;
+                opacity: 1;
+                border-width: 3px;
+            }
+            100% {
+                width: 200px;
+                height: 200px;
+                opacity: 0;
+                border-width: 1px;
+            }
+        }
+
+        .splash-particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(52,152,219,0.6) 100%);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: splashParticle 0.8s ease-out forwards;
+        }
+
+        @keyframes splashParticle {
+            0% {
+                transform: scale(1) translateY(0);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.5) translateY(-20px);
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(0) translateY(0);
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .lake-container { grid-column: span 1; }
+            .lake-canvas-wrapper { 
+                width: 300px; 
+                height: 200px; 
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="digital-garden">
+        <header class="garden-header">
+            <h1 class="garden-title">🌱 Digital Garden</h1>
+            <p class="garden-subtitle">
+                A collection of growing thoughts, ideas, and interactive experiences. 
+                Inspired by the concept of digital gardens as spaces for nurturing knowledge over time.
+            </p>
+        </header>
+
+        <div class="garden-grid">
+            <!-- Lake Component -->
+            <div class="garden-card lake-container">
+                <h2 class="card-title">🌊 Reflection Lake</h2>
+                <div class="card-content">
+                    <p>A tranquil space for self-reflection. Watch your image ripple gently in the digital water, and drop pebbles to create disturbances in the calm surface.</p>
+                    
+                    <div class="lake-controls">
+                        <button class="lake-btn" id="startLake" onclick="toggleLake()">📷 Start Reflection</button>
+                        <button class="lake-btn" id="toggleRipples" onclick="toggleRipples()">🌊 Ripples ON</button>
+                    </div>
+
+                <div class="zen-garden">
+                    <div class="zen-rake-lines"></div>
+                    
+                    <!-- Scattered Garden Stones -->
+                    <div class="garden-stone stone-boulder" style="top: 15%; left: 8%; transform: rotate(15deg);" data-intensity="35"></div>
+                    <div class="garden-stone stone-large" style="top: 25%; left: 85%; transform: rotate(-20deg);" data-intensity="28"></div>
+                    <div class="garden-stone stone-medium" style="top: 8%; left: 75%; transform: rotate(45deg);" data-intensity="20"></div>
+                    <div class="garden-stone stone-medium" style="top: 12%; left: 15%; transform: rotate(-10deg);" data-intensity="22"></div>
+                    <div class="garden-stone stone-small" style="top: 35%; left: 12%; transform: rotate(30deg);" data-intensity="15"></div>
+                    <div class="garden-stone stone-small" style="top: 30%; left: 88%; transform: rotate(-35deg);" data-intensity="18"></div>
+                    <div class="garden-stone stone-small" style="top: 5%; left: 45%; transform: rotate(25deg);" data-intensity="16"></div>
+                    <div class="garden-stone stone-tiny" style="top: 20%; left: 25%; transform: rotate(-45deg);" data-intensity="8"></div>
+                    <div class="garden-stone stone-tiny" style="top: 18%; left: 65%; transform: rotate(60deg);" data-intensity="10"></div>
+                    <div class="garden-stone stone-tiny" style="top: 32%; left: 78%; transform: rotate(-15deg);" data-intensity="9"></div>
+                    <div class="garden-stone stone-tiny" style="top: 28%; left: 5%; transform: rotate(40deg);" data-intensity="7"></div>
+                    
+                    <!-- Bottom area stones -->
+                    <div class="garden-stone stone-large" style="bottom: 8%; left: 20%; transform: rotate(25deg);" data-intensity="30"></div>
+                    <div class="garden-stone stone-medium" style="bottom: 15%; left: 75%; transform: rotate(-30deg);" data-intensity="24"></div>
+                    <div class="garden-stone stone-small" style="bottom: 5%; left: 50%; transform: rotate(10deg);" data-intensity="17"></div>
+                    <div class="garden-stone stone-small" style="bottom: 12%; left: 85%; transform: rotate(-20deg);" data-intensity="19"></div>
+                    <div class="garden-stone stone-tiny" style="bottom: 18%; left: 10%; transform: rotate(55deg);" data-intensity="11"></div>
+                    <div class="garden-stone stone-tiny" style="bottom: 8%; left: 65%; transform: rotate(-25deg);" data-intensity="8"></div>
+                    
+                    <!-- Vegetation around the lake -->
+                    <div class="vegetation grass-patch" style="top: 22%; left: 18%;"></div>
+                    <div class="vegetation grass-patch" style="top: 15%; left: 82%; transform: scale(0.8);"></div>
+                    <div class="vegetation grass-patch" style="bottom: 20%; left: 15%; transform: scale(1.2);"></div>
+                    <div class="vegetation grass-patch" style="bottom: 25%; left: 80%; transform: scale(0.9);"></div>
+                    
+                    <div class="vegetation moss-patch" style="top: 28%; left: 10%;"></div>
+                    <div class="vegetation moss-patch" style="top: 10%; left: 70%; transform: scale(1.3);"></div>
+                    <div class="vegetation moss-patch" style="bottom: 15%; left: 25%;"></div>
+                    <div class="vegetation moss-patch" style="bottom: 10%; left: 85%; transform: scale(0.7);"></div>
+                    <div class="vegetation moss-patch" style="top: 35%; left: 85%; transform: scale(1.1);"></div>
+                    
+                    <div class="vegetation fern" style="top: 18%; left: 92%; transform: rotate(15deg);"></div>
+                    <div class="vegetation fern" style="top: 25%; left: 3%; transform: rotate(-20deg) scale(0.8);"></div>
+                    <div class="vegetation fern" style="bottom: 18%; left: 8%; transform: rotate(25deg);"></div>
+                    <div class="vegetation fern" style="bottom: 22%; left: 88%; transform: rotate(-10deg) scale(1.1);"></div>
+                    
+                    <div class="vegetation small-plant" style="top: 12%; left: 22%;"></div>
+                    <div class="vegetation small-plant" style="top: 8%; left: 65%; transform: scale(0.8);"></div>
+                    <div class="vegetation small-plant" style="top: 32%; left: 95%; transform: scale(1.2);"></div>
+                    <div class="vegetation small-plant" style="bottom: 12%; left: 18%; transform: scale(0.9);"></div>
+                    <div class="vegetation small-plant" style="bottom: 8%; left: 75%;"></div>
+                    <div class="vegetation small-plant" style="bottom: 25%; left: 92%; transform: scale(1.1);"></div>
+                    
+                    <!-- Reeds near the water -->
+                    <div class="vegetation reed" style="top: 40%; left: 25%; animation-delay: 0s;"></div>
+                    <div class="vegetation reed" style="top: 42%; left: 27%; animation-delay: 0.5s; transform: scale(0.8);"></div>
+                    <div class="vegetation reed" style="top: 45%; left: 72%; animation-delay: 1s;"></div>
+                    <div class="vegetation reed" style="top: 43%; left: 74%; animation-delay: 1.5s; transform: scale(1.1);"></div>
+                    <div class="vegetation reed" style="top: 41%; left: 76%; animation-delay: 2s; transform: scale(0.9);"></div>
+                    
+                    <div class="vegetation reed" style="bottom: 40%; left: 20%; animation-delay: 0.3s;"></div>
+                    <div class="vegetation reed" style="bottom: 42%; left: 22%; animation-delay: 0.8s; transform: scale(0.9);"></div>
+                    <div class="vegetation reed" style="bottom: 45%; left: 78%; animation-delay: 1.3s;"></div>
+                    <div class="vegetation reed" style="bottom: 43%; left: 80%; animation-delay: 1.8s; transform: scale(1.2);"></div>
+
+                    <div class="lake-canvas-wrapper" id="lakeContainer">
+                        <!-- p5.js canvas will be inserted here -->
+                    </div>
+                </div>
+
+                    <div class="pebble-area">
+                        <div class="pebble small" data-intensity="8">S</div>
+                        <div class="pebble medium" data-intensity="15">M</div>
+                        <div class="pebble large" data-intensity="25">L</div>
+                    </div>
+
+                    <div class="lake-status" id="lakeStatus">Click "Start Reflection" to see yourself in the lake</div>
+                </div>
+            </div>
+
+            <!-- Other Garden Elements -->
+            <div class="garden-card">
+                <h2 class="card-title">📚 Growing Notes</h2>
+                <div class="card-content">
+                    <p>Like a traditional garden, this digital space contains ideas in various stages of growth. Some thoughts are seedlings, others are fully formed trees of knowledge.</p>
+                    <p><strong>Current seeds:</strong> Interactive media, digital reflection, human-computer interaction patterns.</p>
+                </div>
+            </div>
+
+            <div class="garden-card">
+                <h2 class="card-title">🔗 Connected Thinking</h2>
+                <div class="card-content">
+                    <p>Digital gardens emphasize connections between ideas rather than chronological organization. Each element here relates to themes of reflection, interaction, and digital presence.</p>
+                </div>
+            </div>
+
+            <div class="garden-card">
+                <h2 class="card-title">🌱 Learning in Public</h2>
+                <div class="card-content">
+                    <p>This garden embodies Maggie Appleton's philosophy of learning in public - sharing works in progress, experiments, and half-formed thoughts as they develop over time.</p>
+                </div>
+            </div>
+
+            <div class="garden-card">
+                <h2 class="card-title">⚡ Interactive Elements</h2>
+                <div class="card-content">
+                    <p>Beyond static content, this garden includes interactive experiences that invite participation and play. The reflection lake above is one such experiment in digital materiality.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Lake reflection variables
+        let capture;
+        let isRunning = false;
+        let clarity = 0.8;
+        let distortionAmount = 12;
+        let ripplesEnabled = true;
+        let ripples = [];
+        let timeOffset = 0;
+
+        function setup() {
+            // Create canvas that fills the oval container
+            let canvas = createCanvas(600, 400);
+            canvas.parent('lakeContainer');
+            
+            // Setup pebble interactions
+            setupPebbleInteractions();
+        }
+
+        function draw() {
+            background(0); // Black background
+            
+            if (capture && isRunning) {
+                drawLakeReflection();
+                updateRipples();
+            } else {
+                // Placeholder when not active
+                fill(70, 130, 180, 100);
+                rect(0, 0, width, height);
+                
+                fill(255, 255, 255, 150);
+                textAlign(CENTER, CENTER);
+                textSize(16);
+                text("🌊 Your Reflection Awaits 🌊", width/2, height/2);
+            }
+            
+            timeOffset += 0.02;
+        }
+
+        function drawLakeReflection() {
+            if (!capture) return;
+            
+            push();
+            
+            // Mirror horizontally (like front camera)
+            translate(width, 0);
+            scale(-1, 1);
+            
+            // Fill entire canvas with video
+            let videoAspect = capture.width / capture.height;
+            let canvasAspect = width / height;
+            
+            let drawWidth, drawHeight, drawX, drawY;
+            
+            if (videoAspect > canvasAspect) {
+                drawHeight = height;
+                drawWidth = drawHeight * videoAspect;
+                drawX = (width - drawWidth) / 2;
+                drawY = 0;
+            } else {
+                drawWidth = width;
+                drawHeight = drawWidth / videoAspect;
+                drawX = 0;
+                drawY = (height - drawHeight) / 2;
+            }
+            
+            // Ensure full coverage
+            if (drawWidth < width) {
+                drawWidth = width;
+                drawHeight = drawWidth / videoAspect;
+            }
+            if (drawHeight < height) {
+                drawHeight = height;
+                drawWidth = drawHeight * videoAspect;
+            }
+
+            drawRealisticWaterReflection(drawX, drawY, drawWidth, drawHeight);
+            
+            pop();
+            
+            applyWaterEffects();
+        }
+
+        function drawRealisticWaterReflection(x, y, w, h) {
+            // Draw base image
+            tint(255, 255 * clarity);
+            image(capture, x, y, w, h);
+            noTint();
+            
+            // Apply water distortion
+            let sliceHeight = 2;
+            let numSlices = Math.ceil(h / sliceHeight);
+            
+            for (let i = 0; i < numSlices; i++) {
+                let sliceY = y + (i * sliceHeight);
+                let normalizedY = i / numSlices;
+                
+                // Base water movement
+                let baseDistortion = sin(timeOffset * 1.2 + normalizedY * PI * 2) * distortionAmount * 0.3;
+                baseDistortion += cos(timeOffset * 0.8 + normalizedY * PI * 1.5) * distortionAmount * 0.2;
+                
+                // Add ripple effects
+                let rippleDistortion = 0;
+                for (let ripple of ripples) {
+                    let rippleAge = (millis() - ripple.startTime) * 0.001;
+                    
+                    if (rippleAge < 3) {
+                        let distance = dist(ripple.x, ripple.y, width/2, sliceY);
+                        let normalizedDistance = distance / (width * 0.3);
+                        
+                        let waveSpeed = 50;
+                        let wavefront = rippleAge * waveSpeed;
+                        
+                        if (abs(distance - wavefront) < 40) {
+                            let wavePhase = (distance - wavefront) * 0.2;
+                            let amplitude = ripple.intensity * exp(-rippleAge * 0.8) * exp(-normalizedDistance * 1.5);
+                            
+                            rippleDistortion += sin(wavePhase) * amplitude;
+                            rippleDistortion += sin(wavePhase * 1.5) * amplitude * 0.3;
+                        }
+                        
+                        if (rippleAge < 1) {
+                            let continuousWave = sin(normalizedDistance * 15 - rippleAge * 8) 
+                                * ripple.intensity * 0.4
+                                * exp(-rippleAge * 2) 
+                                * exp(-normalizedDistance * 2);
+                            rippleDistortion += continuousWave;
+                        }
+                    }
+                }
+                
+                let totalDistortion = baseDistortion + rippleDistortion;
+                totalDistortion *= (0.6 + normalizedY * 0.4);
+                
+                // Draw distorted slice
+                if (abs(totalDistortion) > 0.1) {
+                    let sourceY = (i / numSlices) * capture.height;
+                    let sourceHeight = (sliceHeight / h) * capture.height;
+                    
+                    let distortionOpacity = map(abs(totalDistortion), 0, distortionAmount, 0.95, 0.8);
+                    tint(255, 255 * clarity * distortionOpacity);
+                    
+                    copy(capture, 
+                         0, sourceY, capture.width, sourceHeight,
+                         x + totalDistortion, sliceY, w, sliceHeight + 1);
+                } else {
+                    let sourceY = (i / numSlices) * capture.height;
+                    let sourceHeight = (sliceHeight / h) * capture.height;
+                    
+                    tint(255, 255 * clarity);
+                    copy(capture, 
+                         0, sourceY, capture.width, sourceHeight,
+                         x, sliceY, w, sliceHeight + 1);
+                }
+                noTint();
+            }
+        }
+
+        function applyWaterEffects() {
+            fill(70, 120, 160, (1 - clarity) * 15);
+            rect(0, 0, width, height);
+        }
+
+        function updateRipples() {
+            ripples = ripples.filter(ripple => millis() - ripple.startTime < 4000);
+        }
+
+        function setupPebbleInteractions() {
+            // Setup original throwable pebbles
+            const throwablePebbles = document.querySelectorAll('.pebble-area .pebble');
+            setupThrowablePebbles(throwablePebbles);
+            
+            // Setup garden stones
+            const gardenStones = document.querySelectorAll('.garden-stone');
+            setupGardenStones(gardenStones);
+        }
+
+        function setupThrowablePebbles(pebbles) {
+            pebbles.forEach(pebble => {
+                let startPos = null;
+                let isDragging = false;
+                
+                pebble.addEventListener('mousedown', (e) => {
+                    startPos = { x: e.clientX, y: e.clientY };
+                    isDragging = true;
+                    pebble.style.cursor = 'grabbing';
+                    
+                    if (navigator.vibrate) {
+                        navigator.vibrate(50);
+                    }
+                    playPebbleSound('pickup');
+                });
+                
+                pebble.addEventListener('mousemove', (e) => {
+                    if (!isDragging || !startPos) return;
+                    
+                    const deltaX = e.clientX - startPos.x;
+                    const deltaY = e.clientY - startPos.y;
+                    const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+                    
+                    if (distance > 10) {
+                        pebble.style.transform = `scale(1.2) rotateX(${deltaY * 0.5}deg) rotateY(${deltaX * 0.5}deg)`;
+                        pebble.style.opacity = '0.8';
+                    }
+                });
+                
+                pebble.addEventListener('mouseup', (e) => {
+                    if (!isDragging || !startPos) return;
+                    
+                    const deltaX = e.clientX - startPos.x;
+                    const deltaY = e.clientY - startPos.y;
+                    const throwDistance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+                    const throwVelocity = Math.min(throwDistance / 10, 15);
+                    
+                    if (throwDistance > 20) {
+                        const lakeContainer = document.querySelector('#lakeContainer');
+                        const canvasRect = lakeContainer.querySelector('canvas').getBoundingClientRect();
+                        
+                        const targetX = e.clientX - canvasRect.left;
+                        const targetY = e.clientY - canvasRect.top;
+                        
+                        if (targetX >= 0 && targetX <= canvasRect.width && 
+                            targetY >= 0 && targetY <= canvasRect.height) {
+                            throwPebbleWithPhysics(pebble, targetX, targetY, throwVelocity);
+                        }
+                    } else {
+                        throwPebbleWithPhysics(pebble, width/2, height/2, 8);
+                    }
+                    
+                    isDragging = false;
+                    startPos = null;
+                    pebble.style.cursor = 'grab';
+                    pebble.style.transform = '';
+                    pebble.style.opacity = '';
+                });
+                
+                // Touch support
+                pebble.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    const touch = e.touches[0];
+                    startPos = { x: touch.clientX, y: touch.clientY };
+                    isDragging = true;
+                    
+                    if (navigator.vibrate) {
+                        navigator.vibrate([50, 30, 50]);
+                    }
+                    playPebbleSound('pickup');
+                });
+                
+                pebble.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    if (!isDragging || !startPos) return;
+                    
+                    const touch = e.changedTouches[0];
+                    const deltaX = touch.clientX - startPos.x;
+                    const deltaY = touch.clientY - startPos.y;
+                    const throwDistance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+                    const throwVelocity = Math.min(throwDistance / 8, 20);
+                    
+                    const lakeContainer = document.querySelector('#lakeContainer');
+                    const canvasRect = lakeContainer.querySelector('canvas').getBoundingClientRect();
+                    
+                    const targetX = touch.clientX - canvasRect.left;
+                    const targetY = touch.clientY - canvasRect.top;
+                    
+                    if (targetX >= 0 && targetX <= canvasRect.width && 
+                        targetY >= 0 && targetY <= canvasRect.height) {
+                        throwPebbleWithPhysics(pebble, targetX, targetY, throwVelocity);
+                    }
+                    
+                    isDragging = false;
+                    startPos = null;
+                });
+            });
+        }
+
+        function setupGardenStones(stones) {
+            stones.forEach(stone => {
+                stone.addEventListener('click', (e) => {
+                    if (!isRunning || !ripplesEnabled) return;
+                    
+                    const intensity = parseInt(stone.dataset.intensity);
+                    const stoneRect = stone.getBoundingClientRect();
+                    const lakeContainer = document.querySelector('#lakeContainer');
+                    const canvasRect = lakeContainer.querySelector('canvas').getBoundingClientRect();
+                    
+                    // Calculate throw trajectory from stone to center of lake
+                    const startX = stoneRect.left + stoneRect.width / 2;
+                    const startY = stoneRect.top + stoneRect.height / 2;
+                    const targetX = width / 2 + (Math.random() - 0.5) * 100;
+                    const targetY = height / 2 + (Math.random() - 0.5) * 100;
+                    
+                    // Animate stone throw
+                    const throwingStone = stone.cloneNode(true);
+                    throwingStone.style.position = 'fixed';
+                    throwingStone.style.left = startX + 'px';
+                    throwingStone.style.top = startY + 'px';
+                    throwingStone.style.zIndex = '1000';
+                    throwingStone.style.pointerEvents = 'none';
+                    throwingStone.classList.add('throwing');
+                    
+                    document.body.appendChild(throwingStone);
+                    
+                    // Calculate velocity based on stone size
+                    const stoneSize = stone.classList.contains('stone-boulder') ? 'boulder' :
+                                    stone.classList.contains('stone-large') ? 'large' :
+                                    stone.classList.contains('stone-medium') ? 'medium' :
+                                    stone.classList.contains('stone-small') ? 'small' : 'tiny';
+                    
+                    const velocity = intensity / 3;
+                    
+                    // Play throw sound
+                    playPebbleSound('throw');
+                    
+                    // Visual feedback - make original stone briefly glow
+                    stone.style.filter = 'brightness(1.3) drop-shadow(0 0 10px rgba(255,255,255,0.5))';
+                    setTimeout(() => {
+                        stone.style.filter = '';
+                    }, 300);
+                    
+                    // Remove animation element
+                    setTimeout(() => {
+                        throwingStone.remove();
+                    }, 1200);
+                    
+                    // Create impact
+                    setTimeout(() => {
+                        createRealisticImpact(targetX, targetY, intensity, velocity, stoneSize, Math.floor(velocity / 3));
+                        updateLakeStatus(`Beautiful ${stoneSize} stone throw from the garden! ${intensity > 25 ? 'What a splash!' : 'Perfect ripples!'}`);
+                    }, 800);
+                });
+                
+                // Hover effect for garden stones
+                stone.addEventListener('mouseenter', () => {
+                    stone.style.filter = 'brightness(1.1) drop-shadow(0 0 5px rgba(255,255,255,0.3))';
+                });
+                
+                stone.addEventListener('mouseleave', () => {
+                    stone.style.filter = '';
+                });
+            });
+        }
+                        targetY >= 0 && targetY <= canvasRect.height) {
+                        throwPebbleWithPhysics(pebble, targetX, targetY, throwVelocity);
+                    }
+                    
+                    isDragging = false;
+                    startPos = null;
+                });
+            });
+        }
+
+        function throwPebbleWithPhysics(pebbleElement, targetX, targetY, velocity) {
+            if (!isRunning || !ripplesEnabled) return;
+            
+            const intensity = parseInt(pebbleElement.dataset.intensity);
+            const size = pebbleElement.classList.contains('small') ? 'small' : 
+                        pebbleElement.classList.contains('medium') ? 'medium' : 'large';
+            
+            // Create throwing animation
+            const throwingPebble = pebbleElement.cloneNode(true);
+            throwingPebble.classList.add('throwing');
+            pebbleElement.parentNode.appendChild(throwingPebble);
+            
+            // Calculate realistic physics
+            const airTime = 0.8 + (velocity * 0.05); // Longer flight for harder throws
+            const bounceCount = Math.floor(velocity / 5); // Skipping effect
+            
+            // Play throw sound
+            playPebbleSound('throw');
+            
+            // Remove animation element after animation
+            setTimeout(() => {
+                throwingPebble.remove();
+            }, 1200);
+            
+            // Create impact after flight time
+            setTimeout(() => {
+                createRealisticImpact(targetX, targetY, intensity, velocity, size, bounceCount);
+            }, airTime * 1000);
+        }
+
+        function createRealisticImpact(x, y, intensity, velocity, size, bounceCount) {
+            // Primary impact
+            createAdvancedRipple(x, y, intensity + velocity * 2, 'primary');
+            
+            // Play splash sound
+            playPebbleSound('splash', intensity);
+            
+            // Haptic feedback for impact
+            if (navigator.vibrate) {
+                const vibrationPattern = size === 'large' ? [100, 50, 100] : 
+                                       size === 'medium' ? [70, 30, 70] : [40, 20, 40];
+                navigator.vibrate(vibrationPattern);
+            }
+            
+            // Create visual splash
+            createSplashEffect(x, y, intensity);
+            
+            // Skip bounces for realistic stone skipping
+            if (bounceCount > 0 && velocity > 8) {
+                const skipInterval = 300; // ms between skips
+                
+                for (let i = 1; i <= Math.min(bounceCount, 3); i++) {
+                    setTimeout(() => {
+                        const skipX = x + (Math.random() - 0.5) * velocity * 8;
+                        const skipY = y + (Math.random() - 0.5) * velocity * 4;
+                        const skipIntensity = intensity * (1 - i * 0.3); // Decreasing intensity
+                        
+                        if (skipX >= 0 && skipX <= width && skipY >= 0 && skipY <= height) {
+                            createAdvancedRipple(skipX, skipY, skipIntensity, 'skip');
+                            playPebbleSound('skip');
+                            createSplashEffect(skipX, skipY, skipIntensity * 0.6);
+                        }
+                    }, skipInterval * i);
+                }
+            }
+            
+            updateLakeStatus(`Beautiful ${size} stone skip! ${bounceCount > 1 ? `${bounceCount} bounces!` : 'Perfect aim!'}`);
+        }
+
+        function createAdvancedRipple(x, y, intensity, type) {
+            // Add to physics ripples
+            ripples.push({
+                x: x,
+                y: y,
+                intensity: intensity,
+                startTime: millis(),
+                type: type
+            });
+            
+            // Create visual ripple ring
+            const rippleRing = document.createElement('div');
+            rippleRing.className = 'pebble-ripple-effect';
+            rippleRing.style.left = (x - 10) + 'px';
+            rippleRing.style.top = (y - 10) + 'px';
+            rippleRing.style.position = 'absolute';
+            rippleRing.style.zIndex = '100';
+            
+            document.querySelector('#lakeContainer').appendChild(rippleRing);
+            
+            setTimeout(() => {
+                rippleRing.remove();
+            }, 2000);
+        }
+
+        function createSplashEffect(x, y, intensity) {
+            const particleCount = Math.floor(intensity / 3) + 3;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'splash-particle';
+                
+                const angle = (Math.PI * 2 * i) / particleCount;
+                const distance = 20 + Math.random() * (intensity * 2);
+                const particleX = x + Math.cos(angle) * distance;
+                const particleY = y + Math.sin(angle) * distance;
+                
+                particle.style.left = particleX + 'px';
+                particle.style.top = particleY + 'px';
+                particle.style.position = 'absolute';
+                particle.style.zIndex = '99';
+                
+                document.querySelector('#lakeContainer').appendChild(particle);
+                
+                setTimeout(() => {
+                    particle.remove();
+                }, 800);
+            }
+        }
+
+        // Audio feedback system
+        function playPebbleSound(type, intensity = 1) {
+            // Create audio context for procedural sounds
+            if (!window.audioContext) {
+                window.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            
+            const ctx = window.audioContext;
+            const oscillator = ctx.createOscillator();
+            const gainNode = ctx.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(ctx.destination);
+            
+            switch(type) {
+                case 'pickup':
+                    oscillator.frequency.setValueAtTime(800, ctx.currentTime);
+                    oscillator.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + 0.1);
+                    gainNode.gain.setValueAtTime(0.1, ctx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+                    oscillator.start();
+                    oscillator.stop(ctx.currentTime + 0.1);
+                    break;
+                    
+                case 'throw':
+                    oscillator.frequency.setValueAtTime(300, ctx.currentTime);
+                    oscillator.frequency.exponentialRampToValueAtTime(150, ctx.currentTime + 0.2);
+                    gainNode.gain.setValueAtTime(0.05, ctx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
+                    oscillator.start();
+                    oscillator.stop(ctx.currentTime + 0.2);
+                    break;
+                    
+                case 'splash':
+                    const volume = Math.min(intensity / 20, 0.3);
+                    oscillator.frequency.setValueAtTime(200, ctx.currentTime);
+                    oscillator.frequency.exponentialRampToValueAtTime(50, ctx.currentTime + 0.3);
+                    gainNode.gain.setValueAtTime(volume, ctx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+                    oscillator.start();
+                    oscillator.stop(ctx.currentTime + 0.3);
+                    break;
+                    
+                case 'skip':
+                    oscillator.frequency.setValueAtTime(400, ctx.currentTime);
+                    oscillator.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.15);
+                    gainNode.gain.setValueAtTime(0.08, ctx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+                    oscillator.start();
+                    oscillator.stop(ctx.currentTime + 0.15);
+                    break;
+            }
+        }
+
+        function mousePressed() {
+            if (isRunning && ripplesEnabled && mouseX >= 0 && mouseX <= width && mouseY >= 0 && mouseY <= height) {
+                createRipple(mouseX, mouseY, 12);
+                updateLakeStatus("Ripple created! The water responds to your touch.");
+                return false;
+            }
+        }
+
+        // Control functions
+        async function toggleLake() {
+            const button = document.getElementById('startLake');
+            
+            if (!isRunning) {
+                try {
+                    updateLakeStatus("Requesting camera permission...");
+                    
+                    // Check if getUserMedia is supported
+                    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                        throw new Error('Camera API not supported in this browser');
+                    }
+
+                    // First get permission using standard web API
+                    let testStream;
+                    try {
+                        testStream = await navigator.mediaDevices.getUserMedia({ 
+                            video: { 
+                                width: { ideal: 640 },
+                                height: { ideal: 480 }
+                            },
+                            audio: false 
+                        });
+                        
+                        console.log('Camera permission granted, stream obtained:', testStream);
+                        
+                        // Stop the test stream
+                        testStream.getTracks().forEach(track => track.stop());
+                        
+                    } catch (permissionError) {
+                        console.error('Permission error:', permissionError);
+                        
+                        if (permissionError.name === 'NotAllowedError') {
+                            updateLakeStatus("Camera permission denied. Please allow camera access and try again.");
+                        } else if (permissionError.name === 'NotFoundError') {
+                            updateLakeStatus("No camera found. Please connect a camera and try again.");
+                        } else if (permissionError.name === 'NotReadableError') {
+                            updateLakeStatus("Camera is busy. Please close other applications using the camera.");
+                        } else {
+                            updateLakeStatus(`Camera error: ${permissionError.message}`);
+                        }
+                        return;
+                    }
+                    
+                    updateLakeStatus("Permission granted! Starting lake reflection...");
+                    
+                    // Now create p5.js capture
+                    capture = createCapture(VIDEO, (stream) => {
+                        console.log('p5.js capture created successfully');
+                        isRunning = true;
+                        button.textContent = '⏸️ Stop Lake';
+                        button.classList.add('active');
+                        updateLakeStatus("Your reflection lake is active! Click stones or drop pebbles to create ripples.");
+                    });
+                    
+                    capture.size(640, 480);
+                    capture.hide();
+                    
+                    // Fallback timeout
+                    setTimeout(() => {
+                        if (!isRunning && capture) {
+                            console.log('Checking capture status...');
+                            console.log('Capture width:', capture.width, 'height:', capture.height);
+                            
+                            if (capture.width > 0 && capture.height > 0) {
+                                console.log('Capture seems to be working, activating lake');
+                                isRunning = true;
+                                button.textContent = '⏸️ Stop Lake';
+                                button.classList.add('active');
+                                updateLakeStatus("Lake reflection active! Try clicking the garden stones!");
+                            } else {
+                                console.log('Capture failed to initialize properly');
+                                updateLakeStatus("Camera initialization failed. Please refresh and try again.");
+                            }
+                        }
+                    }, 3000);
+                    
+                } catch (error) {
+                    console.error('Lake setup error:', error);
+                    updateLakeStatus(`Setup error: ${error.message}. Please refresh and try again.`);
+                }
+            } else {
+                // Stop the lake
+                if (capture) {
+                    capture.remove();
+                    capture = null;
+                }
+                isRunning = false;
+                button.textContent = '📷 Start Reflection';
+                button.classList.remove('active');
+                updateLakeStatus("Lake reflection stopped. Click to restart.");
+            }
+        }
+
+        function toggleRipples() {
+            const button = document.getElementById('toggleRipples');
+            ripplesEnabled = !ripplesEnabled;
+            button.textContent = `🌊 Ripples ${ripplesEnabled ? 'ON' : 'OFF'}`;
+            button.classList.toggle('active', ripplesEnabled);
+        }
+
+        function updateLakeStatus(message) {
+            document.getElementById('lakeStatus').textContent = message;
+        }
+
+        function windowResized() {
+            // Keep canvas size consistent
+        }
+    </script>
+</body>
+</html>
