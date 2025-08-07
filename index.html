@@ -85,26 +85,9 @@
         /* Lake specific styles */
         .lake-container {
             grid-column: span 2;
-            background: linear-gradient(135deg, rgba(139, 69, 19, 0.1) 0%, rgba(160, 82, 45, 0.15) 50%, rgba(34, 139, 34, 0.1) 100%);
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.1) 0%, rgba(41, 128, 185, 0.2) 100%);
             position: relative;
-            overflow: visible;
-            padding: 60px 30px 30px 30px;
-        }
-
-        .zen-garden {
-            position: relative;
-            width: 100%;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 40px;
-            background: 
-                radial-gradient(circle at 20% 80%, rgba(139, 69, 19, 0.3) 0%, transparent 25%),
-                radial-gradient(circle at 80% 20%, rgba(34, 139, 34, 0.2) 0%, transparent 30%),
-                linear-gradient(135deg, #f4f1de 0%, #e9dcc9 50%, #f4f1de 100%);
-            border-radius: 30px;
-            box-shadow: 
-                inset 0 0 50px rgba(139, 69, 19, 0.1),
-                0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
         }
 
         .lake-canvas-wrapper {
@@ -118,177 +101,18 @@
                 inset 0 0 50px rgba(0, 0, 0, 0.3),
                 0 10px 30px rgba(0, 0, 0, 0.2);
             background: radial-gradient(ellipse at center, #3498db 0%, #2980b9 100%);
-            z-index: 10;
         }
 
         .lake-canvas-wrapper::before {
             content: '';
             position: absolute;
-            top: -15px;
-            left: -15px;
-            right: -15px;
-            bottom: -15px;
-            background: 
-                radial-gradient(ellipse at center, 
-                    #8b4513 0%, 
-                    #a0522d 20%, 
-                    #daa520 40%, 
-                    #228b22 60%, 
-                    #8b4513 100%);
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            background: linear-gradient(45deg, #8b4513, #d2691e, #daa520);
             border-radius: 50%;
             z-index: -1;
-        }
-
-        .garden-stone {
-            position: absolute;
-            border-radius: 40% 60% 50% 30% / 30% 40% 60% 50%;
-            box-shadow: 
-                inset -3px -3px 10px rgba(0, 0, 0, 0.3),
-                inset 3px 3px 10px rgba(255, 255, 255, 0.2),
-                0 4px 8px rgba(0, 0, 0, 0.2);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            z-index: 5;
-        }
-
-        .garden-stone::before {
-            content: '';
-            position: absolute;
-            top: 20%;
-            left: 25%;
-            width: 35%;
-            height: 30%;
-            background: radial-gradient(ellipse at 40% 30%, rgba(255, 255, 255, 0.4) 0%, transparent 70%);
-            border-radius: 50%;
-            pointer-events: none;
-        }
-
-        .garden-stone:hover {
-            transform: scale(1.05) translateY(-2px);
-            box-shadow: 
-                inset -3px -3px 10px rgba(0, 0, 0, 0.4),
-                inset 3px 3px 10px rgba(255, 255, 255, 0.3),
-                0 8px 16px rgba(0, 0, 0, 0.3);
-        }
-
-        .stone-tiny {
-            width: 20px;
-            height: 15px;
-            background: 
-                radial-gradient(ellipse at 30% 25%, #d3d3d3 0%, #a9a9a9 40%, #808080 100%);
-        }
-
-        .stone-small {
-            width: 35px;
-            height: 25px;
-            background: 
-                radial-gradient(ellipse at 25% 30%, #deb887 0%, #d2691e 30%, #a0522d 70%, #8b4513 100%);
-        }
-
-        .stone-medium {
-            width: 50px;
-            height: 40px;
-            background: 
-                radial-gradient(ellipse at 20% 20%, #f5deb3 0%, #daa520 25%, #b8860b 50%, #8b7355 100%);
-        }
-
-        .stone-large {
-            width: 70px;
-            height: 55px;
-            background: 
-                radial-gradient(ellipse at 30% 25%, #f4a460 0%, #cd853f 30%, #a0522d 60%, #654321 100%);
-        }
-
-        .stone-boulder {
-            width: 90px;
-            height: 70px;
-            background: 
-                radial-gradient(ellipse at 25% 20%, #d2b48c 0%, #bc9a6a 20%, #8b7d6b 50%, #696969 80%, #2f4f4f 100%);
-        }
-
-        .vegetation {
-            position: absolute;
-            z-index: 3;
-        }
-
-        .grass-patch {
-            width: 40px;
-            height: 30px;
-            background: 
-                radial-gradient(ellipse at center, rgba(34, 139, 34, 0.8) 0%, rgba(0, 100, 0, 0.6) 50%, transparent 100%);
-            border-radius: 50%;
-            filter: blur(1px);
-        }
-
-        .moss-patch {
-            width: 25px;
-            height: 20px;
-            background: 
-                radial-gradient(ellipse at center, rgba(107, 142, 35, 0.7) 0%, rgba(85, 107, 47, 0.5) 70%, transparent 100%);
-            border-radius: 50%;
-            filter: blur(0.5px);
-        }
-
-        .fern {
-            width: 30px;
-            height: 35px;
-            background: 
-                linear-gradient(45deg, transparent 30%, rgba(34, 139, 34, 0.6) 35%, rgba(34, 139, 34, 0.8) 40%, transparent 45%),
-                linear-gradient(-45deg, transparent 30%, rgba(0, 128, 0, 0.5) 35%, rgba(0, 128, 0, 0.7) 40%, transparent 45%),
-                linear-gradient(0deg, rgba(34, 139, 34, 0.3) 0%, transparent 60%);
-            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-        }
-
-        .small-plant {
-            width: 15px;
-            height: 20px;
-            background: 
-                linear-gradient(0deg, rgba(34, 139, 34, 0.8) 0%, rgba(50, 205, 50, 0.6) 50%, transparent 100%);
-            border-radius: 50% 50% 50% 50% / 80% 80% 20% 20%;
-        }
-
-        .reed {
-            width: 8px;
-            height: 45px;
-            background: 
-                linear-gradient(0deg, rgba(107, 142, 35, 0.9) 0%, rgba(154, 205, 50, 0.7) 30%, rgba(173, 255, 47, 0.5) 70%, transparent 100%);
-            border-radius: 50%;
-            transform-origin: bottom center;
-            animation: gentleSway 4s ease-in-out infinite;
-        }
-
-        @keyframes gentleSway {
-            0%, 100% { transform: rotate(0deg); }
-            25% { transform: rotate(2deg); }
-            75% { transform: rotate(-2deg); }
-        }
-
-        .zen-rake-lines {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image: 
-                repeating-linear-gradient(
-                    45deg,
-                    transparent 0px,
-                    rgba(139, 69, 19, 0.1) 1px,
-                    rgba(139, 69, 19, 0.1) 2px,
-                    transparent 3px,
-                    transparent 15px
-                ),
-                repeating-linear-gradient(
-                    -45deg,
-                    transparent 0px,
-                    rgba(160, 82, 45, 0.05) 1px,
-                    rgba(160, 82, 45, 0.05) 2px,
-                    transparent 3px,
-                    transparent 20px
-                );
-            border-radius: 30px;
-            pointer-events: none;
-            z-index: 1;
         }
 
         .lake-canvas-wrapper::after {
@@ -544,70 +368,9 @@
                         <button class="lake-btn" id="toggleRipples" onclick="toggleRipples()">🌊 Ripples ON</button>
                     </div>
 
-                <div class="zen-garden">
-                    <div class="zen-rake-lines"></div>
-                    
-                    <!-- Scattered Garden Stones -->
-                    <div class="garden-stone stone-boulder" style="top: 15%; left: 8%; transform: rotate(15deg);" data-intensity="35"></div>
-                    <div class="garden-stone stone-large" style="top: 25%; left: 85%; transform: rotate(-20deg);" data-intensity="28"></div>
-                    <div class="garden-stone stone-medium" style="top: 8%; left: 75%; transform: rotate(45deg);" data-intensity="20"></div>
-                    <div class="garden-stone stone-medium" style="top: 12%; left: 15%; transform: rotate(-10deg);" data-intensity="22"></div>
-                    <div class="garden-stone stone-small" style="top: 35%; left: 12%; transform: rotate(30deg);" data-intensity="15"></div>
-                    <div class="garden-stone stone-small" style="top: 30%; left: 88%; transform: rotate(-35deg);" data-intensity="18"></div>
-                    <div class="garden-stone stone-small" style="top: 5%; left: 45%; transform: rotate(25deg);" data-intensity="16"></div>
-                    <div class="garden-stone stone-tiny" style="top: 20%; left: 25%; transform: rotate(-45deg);" data-intensity="8"></div>
-                    <div class="garden-stone stone-tiny" style="top: 18%; left: 65%; transform: rotate(60deg);" data-intensity="10"></div>
-                    <div class="garden-stone stone-tiny" style="top: 32%; left: 78%; transform: rotate(-15deg);" data-intensity="9"></div>
-                    <div class="garden-stone stone-tiny" style="top: 28%; left: 5%; transform: rotate(40deg);" data-intensity="7"></div>
-                    
-                    <!-- Bottom area stones -->
-                    <div class="garden-stone stone-large" style="bottom: 8%; left: 20%; transform: rotate(25deg);" data-intensity="30"></div>
-                    <div class="garden-stone stone-medium" style="bottom: 15%; left: 75%; transform: rotate(-30deg);" data-intensity="24"></div>
-                    <div class="garden-stone stone-small" style="bottom: 5%; left: 50%; transform: rotate(10deg);" data-intensity="17"></div>
-                    <div class="garden-stone stone-small" style="bottom: 12%; left: 85%; transform: rotate(-20deg);" data-intensity="19"></div>
-                    <div class="garden-stone stone-tiny" style="bottom: 18%; left: 10%; transform: rotate(55deg);" data-intensity="11"></div>
-                    <div class="garden-stone stone-tiny" style="bottom: 8%; left: 65%; transform: rotate(-25deg);" data-intensity="8"></div>
-                    
-                    <!-- Vegetation around the lake -->
-                    <div class="vegetation grass-patch" style="top: 22%; left: 18%;"></div>
-                    <div class="vegetation grass-patch" style="top: 15%; left: 82%; transform: scale(0.8);"></div>
-                    <div class="vegetation grass-patch" style="bottom: 20%; left: 15%; transform: scale(1.2);"></div>
-                    <div class="vegetation grass-patch" style="bottom: 25%; left: 80%; transform: scale(0.9);"></div>
-                    
-                    <div class="vegetation moss-patch" style="top: 28%; left: 10%;"></div>
-                    <div class="vegetation moss-patch" style="top: 10%; left: 70%; transform: scale(1.3);"></div>
-                    <div class="vegetation moss-patch" style="bottom: 15%; left: 25%;"></div>
-                    <div class="vegetation moss-patch" style="bottom: 10%; left: 85%; transform: scale(0.7);"></div>
-                    <div class="vegetation moss-patch" style="top: 35%; left: 85%; transform: scale(1.1);"></div>
-                    
-                    <div class="vegetation fern" style="top: 18%; left: 92%; transform: rotate(15deg);"></div>
-                    <div class="vegetation fern" style="top: 25%; left: 3%; transform: rotate(-20deg) scale(0.8);"></div>
-                    <div class="vegetation fern" style="bottom: 18%; left: 8%; transform: rotate(25deg);"></div>
-                    <div class="vegetation fern" style="bottom: 22%; left: 88%; transform: rotate(-10deg) scale(1.1);"></div>
-                    
-                    <div class="vegetation small-plant" style="top: 12%; left: 22%;"></div>
-                    <div class="vegetation small-plant" style="top: 8%; left: 65%; transform: scale(0.8);"></div>
-                    <div class="vegetation small-plant" style="top: 32%; left: 95%; transform: scale(1.2);"></div>
-                    <div class="vegetation small-plant" style="bottom: 12%; left: 18%; transform: scale(0.9);"></div>
-                    <div class="vegetation small-plant" style="bottom: 8%; left: 75%;"></div>
-                    <div class="vegetation small-plant" style="bottom: 25%; left: 92%; transform: scale(1.1);"></div>
-                    
-                    <!-- Reeds near the water -->
-                    <div class="vegetation reed" style="top: 40%; left: 25%; animation-delay: 0s;"></div>
-                    <div class="vegetation reed" style="top: 42%; left: 27%; animation-delay: 0.5s; transform: scale(0.8);"></div>
-                    <div class="vegetation reed" style="top: 45%; left: 72%; animation-delay: 1s;"></div>
-                    <div class="vegetation reed" style="top: 43%; left: 74%; animation-delay: 1.5s; transform: scale(1.1);"></div>
-                    <div class="vegetation reed" style="top: 41%; left: 76%; animation-delay: 2s; transform: scale(0.9);"></div>
-                    
-                    <div class="vegetation reed" style="bottom: 40%; left: 20%; animation-delay: 0.3s;"></div>
-                    <div class="vegetation reed" style="bottom: 42%; left: 22%; animation-delay: 0.8s; transform: scale(0.9);"></div>
-                    <div class="vegetation reed" style="bottom: 45%; left: 78%; animation-delay: 1.3s;"></div>
-                    <div class="vegetation reed" style="bottom: 43%; left: 80%; animation-delay: 1.8s; transform: scale(1.2);"></div>
-
                     <div class="lake-canvas-wrapper" id="lakeContainer">
                         <!-- p5.js canvas will be inserted here -->
                     </div>
-                </div>
 
                     <div class="pebble-area">
                         <div class="pebble small" data-intensity="8">S</div>
@@ -819,28 +582,25 @@
         }
 
         function setupPebbleInteractions() {
-            // Setup original throwable pebbles
-            const throwablePebbles = document.querySelectorAll('.pebble-area .pebble');
-            setupThrowablePebbles(throwablePebbles);
+            const pebbles = document.querySelectorAll('.pebble');
+            const lakeContainer = document.querySelector('#lakeContainer');
             
-            // Setup garden stones
-            const gardenStones = document.querySelectorAll('.garden-stone');
-            setupGardenStones(gardenStones);
-        }
-
-        function setupThrowablePebbles(pebbles) {
             pebbles.forEach(pebble => {
                 let startPos = null;
                 let isDragging = false;
                 
+                // Enhanced click/tap interaction
                 pebble.addEventListener('mousedown', (e) => {
                     startPos = { x: e.clientX, y: e.clientY };
                     isDragging = true;
                     pebble.style.cursor = 'grabbing';
                     
+                    // Add haptic feedback (if supported)
                     if (navigator.vibrate) {
                         navigator.vibrate(50);
                     }
+                    
+                    // Audio feedback
                     playPebbleSound('pickup');
                 });
                 
@@ -852,6 +612,7 @@
                     const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
                     
                     if (distance > 10) {
+                        // Visual feedback during drag
                         pebble.style.transform = `scale(1.2) rotateX(${deltaY * 0.5}deg) rotateY(${deltaX * 0.5}deg)`;
                         pebble.style.opacity = '0.8';
                     }
@@ -866,7 +627,8 @@
                     const throwVelocity = Math.min(throwDistance / 10, 15);
                     
                     if (throwDistance > 20) {
-                        const lakeContainer = document.querySelector('#lakeContainer');
+                        // Calculate throw target
+                        const lakeRect = lakeContainer.getBoundingClientRect();
                         const canvasRect = lakeContainer.querySelector('canvas').getBoundingClientRect();
                         
                         const targetX = e.clientX - canvasRect.left;
@@ -874,12 +636,16 @@
                         
                         if (targetX >= 0 && targetX <= canvasRect.width && 
                             targetY >= 0 && targetY <= canvasRect.height) {
+                            
                             throwPebbleWithPhysics(pebble, targetX, targetY, throwVelocity);
                         }
                     } else {
+                        // Simple click - throw to center
+                        const intensity = parseInt(pebble.dataset.intensity);
                         throwPebbleWithPhysics(pebble, width/2, height/2, 8);
                     }
                     
+                    // Reset pebble
                     isDragging = false;
                     startPos = null;
                     pebble.style.cursor = 'grab';
@@ -917,82 +683,6 @@
                     const targetY = touch.clientY - canvasRect.top;
                     
                     if (targetX >= 0 && targetX <= canvasRect.width && 
-                        targetY >= 0 && targetY <= canvasRect.height) {
-                        throwPebbleWithPhysics(pebble, targetX, targetY, throwVelocity);
-                    }
-                    
-                    isDragging = false;
-                    startPos = null;
-                });
-            });
-        }
-
-        function setupGardenStones(stones) {
-            stones.forEach(stone => {
-                stone.addEventListener('click', (e) => {
-                    if (!isRunning || !ripplesEnabled) return;
-                    
-                    const intensity = parseInt(stone.dataset.intensity);
-                    const stoneRect = stone.getBoundingClientRect();
-                    const lakeContainer = document.querySelector('#lakeContainer');
-                    const canvasRect = lakeContainer.querySelector('canvas').getBoundingClientRect();
-                    
-                    // Calculate throw trajectory from stone to center of lake
-                    const startX = stoneRect.left + stoneRect.width / 2;
-                    const startY = stoneRect.top + stoneRect.height / 2;
-                    const targetX = width / 2 + (Math.random() - 0.5) * 100;
-                    const targetY = height / 2 + (Math.random() - 0.5) * 100;
-                    
-                    // Animate stone throw
-                    const throwingStone = stone.cloneNode(true);
-                    throwingStone.style.position = 'fixed';
-                    throwingStone.style.left = startX + 'px';
-                    throwingStone.style.top = startY + 'px';
-                    throwingStone.style.zIndex = '1000';
-                    throwingStone.style.pointerEvents = 'none';
-                    throwingStone.classList.add('throwing');
-                    
-                    document.body.appendChild(throwingStone);
-                    
-                    // Calculate velocity based on stone size
-                    const stoneSize = stone.classList.contains('stone-boulder') ? 'boulder' :
-                                    stone.classList.contains('stone-large') ? 'large' :
-                                    stone.classList.contains('stone-medium') ? 'medium' :
-                                    stone.classList.contains('stone-small') ? 'small' : 'tiny';
-                    
-                    const velocity = intensity / 3;
-                    
-                    // Play throw sound
-                    playPebbleSound('throw');
-                    
-                    // Visual feedback - make original stone briefly glow
-                    stone.style.filter = 'brightness(1.3) drop-shadow(0 0 10px rgba(255,255,255,0.5))';
-                    setTimeout(() => {
-                        stone.style.filter = '';
-                    }, 300);
-                    
-                    // Remove animation element
-                    setTimeout(() => {
-                        throwingStone.remove();
-                    }, 1200);
-                    
-                    // Create impact
-                    setTimeout(() => {
-                        createRealisticImpact(targetX, targetY, intensity, velocity, stoneSize, Math.floor(velocity / 3));
-                        updateLakeStatus(`Beautiful ${stoneSize} stone throw from the garden! ${intensity > 25 ? 'What a splash!' : 'Perfect ripples!'}`);
-                    }, 800);
-                });
-                
-                // Hover effect for garden stones
-                stone.addEventListener('mouseenter', () => {
-                    stone.style.filter = 'brightness(1.1) drop-shadow(0 0 5px rgba(255,255,255,0.3))';
-                });
-                
-                stone.addEventListener('mouseleave', () => {
-                    stone.style.filter = '';
-                });
-            });
-        }
                         targetY >= 0 && targetY <= canvasRect.height) {
                         throwPebbleWithPhysics(pebble, targetX, targetY, throwVelocity);
                     }
